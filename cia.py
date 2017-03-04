@@ -7,6 +7,7 @@ import urllib.request, re, csv
 from bs4 import BeautifulSoup
 textVersionUrl = 'https://www.cia.gov/Library/publications/the-world-factbook/print/textversion.html'
 baseUrl = 'https://www.cia.gov/Library/publications/the-world-factbook/'
+#url request
 html = urllib.request.urlopen(textVersionUrl)
 soup = BeautifulSoup (html, "lxml")
 code=[]
@@ -17,6 +18,7 @@ road=[]
 rail=[]
 rows = zip(code,gdp,area,road,rail)
 
+#find strings
 for link in soup.find_all('a'):
     if link.has_attr('href'):
         string = link.get('href')
@@ -45,9 +47,9 @@ for i in range(len(sublinks)):
     for div in subpage.find_all('div'):
         if div.text == 'GDP - per capita (PPP):':
             gdpdata = div.find_next('div').text
+            gdpdata = gdpdata.split()
             #convert string into numberic data
             try:
-                gdpdata = gdpdata.split()
                 gdp.append(int("".join(re.findall(r'[0-9]', gdpdata[0]))))
             except:
                 try:
@@ -80,6 +82,7 @@ for i in range(len(sublinks)):
                 rail.append(int("".join(re.findall(r'[0-9]', raildata[1]))))
             except:
                 rail.append(0)
+                
 #write data in csv
 with open("cia.csv", "w", newline='') as csvfile:
     writer = csv.writer(csvfile, delimiter=',')
